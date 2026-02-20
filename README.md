@@ -14,12 +14,12 @@ More to follow and sample [network map.](https://github.com/CCRI-Cyberknights/pi
 
 The 5 challenges:
 
-[OWASP Juice Shop](https://owasp.org/www-project-juice-shop/)
+[OWASP Juice Shop](https://owasp.org/www-project-juice-shop/) - [The player readme](https://github.com/CCRI-Cyberknights/pi_stemday/blob/main/readme_juice.html)
 
-[OWASP WebGoat](https://owasp.org/www-project-webgoat/)
+[OWASP WebGoat](https://owasp.org/www-project-webgoat/) - [The player readme](https://github.com/CCRI-Cyberknights/pi_stemday/blob/main/readme_webgoat.html)
 
-(Sqli-labs)(https://github.com/Audi-1/sqli-labs)-[Running this ARM64 fork](https://hub.docker.com/r/hominsu/sqli-labs)
+[Sqli-labs](https://github.com/Audi-1/sqli-labs)-[Running this ARM64 fork](https://hub.docker.com/r/hominsu/sqli-labs) - [The player readme](https://github.com/CCRI-Cyberknights/pi_stemday/blob/main/readme_sqli.html)
 
-[The Command Line Murders](https://github.com/veltman/clmystery)
+[The Command Line Murders](https://github.com/veltman/clmystery) - [This challenge has instructions in a file when you ssh in](https://github.com/veltman/clmystery/blob/master/instructions)
 
-[Cowrie honeypot](https://docs.cowrie.org/en/latest/)
+[Cowrie honeypot](https://docs.cowrie.org/en/latest/) - [The player readme](https://github.com/CCRI-Cyberknights/pi_stemday/blob/main/readme_cowrie.html)
