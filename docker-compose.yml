@@ -1,0 +1,114 @@
+services:
+  # ==========================================
+  # STATION 1 (Red/Blue/Yellow Player 1)
+  # ==========================================
+  juice-shop-1:
+    image: bkimminich/juice-shop
+    container_name: juice-shop-1
+    ports:
+      - "3001:3000"
+    restart: always
+
+  sqli-labs-1:
+    image: hominsu/sqli-labs
+    container_name: sqli-labs-1
+    restart: always
+    ports:
+      - "8011:80"
+
+  webgoat-1:
+    image: webgoat/webgoat
+    container_name: webgoat-1
+    ports:
+      - "8021:8080"
+    restart: always
+
+  clmystery-1:
+    build: ./clmystery
+    container_name: clmystery-1
+    restart: always
+    ports:
+      - "2231:22"
+
+  cowrie-1:
+    image: cowrie/cowrie
+    container_name: cowrie-1
+    ports:
+      - "2221:2222"
+    restart: always
+
+  # ==========================================
+  # STATION 2 (Red/Blue/Yellow Player 2)
+  # ==========================================
+  juice-shop-2:
+    image: bkimminich/juice-shop
+    container_name: juice-shop-2
+    ports:
+      - "3002:3000"
+    restart: always
+
+  sqli-labs-2:
+    image: hominsu/sqli-labs
+    container_name: sqli-labs-2
+    restart: always
+    ports:
+      - "8012:80"
+
+  webgoat-2:
+    image: webgoat/webgoat
+    container_name: webgoat-2
+    ports:
+      - "8022:8080"
+    restart: always
+
+  clmystery-2:
+    build: ./clmystery
+    container_name: clmystery-2
+    restart: always
+    ports:
+      - "2232:22"
+
+  cowrie-2:
+    image: cowrie/cowrie
+    container_name: cowrie-2
+    ports:
+      - "2222:2222"
+    restart: always
+
+  # ==========================================
+  # STATION 3 (Red/Blue/Yellow Player 3)
+  # ==========================================
+  juice-shop-3:
+    image: bkimminich/juice-shop
+    container_name: juice-shop-3
+    ports:
+      - "3003:3000"
+    restart: always
+
+  sqli-labs-3:
+    image: hominsu/sqli-labs
+    container_name: sqli-labs-3
+    restart: always
+    ports:
+      - "8013:80"
+
+  webgoat-3:
+    image: webgoat/webgoat
+    container_name: webgoat-3
+    ports:
+      - "8023:8080"
+    restart: always
+
+  clmystery-3:
+    build: ./clmystery
+    container_name: clmystery-3
+    restart: always
+    ports:
+      - "2233:22"
+
+  cowrie-3:
+    image: cowrie/cowrie
+    container_name: cowrie-3
+    ports:
+      - "2223:2222"
+    restart: always
