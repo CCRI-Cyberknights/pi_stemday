@@ -11,3 +11,15 @@ This is optional as most challenges have their own internal scoring.
 The 3 target Pis are connected via the switch part of the wireless router. The player Pis connect via Wi-Fi. Using DHCP reservation, the Pi's MAC addresses are given specific IPs, when they ask to connect to the network, DHCP gives them the correct IP for team placement. (Attach a note to each PI for which is which!)
 
 More to follow and sample [network map.](https://github.com/CCRI-Cyberknights/pi_stemday/blob/main/PI%20Map.png)
+
+The 5 challenges:
+
+[OWASP Juice Shop](https://owasp.org/www-project-juice-shop/)
+
+[OWASP WebGoat](https://owasp.org/www-project-webgoat/)
+
+(Sqli-labs)(https://github.com/Audi-1/sqli-labs)-[Running this ARM64 fork](https://hub.docker.com/r/hominsu/sqli-labs)
+
+[The Command Line Murders](https://github.com/veltman/clmystery)
+
+[Cowrie honeypot](https://docs.cowrie.org/en/latest/)
