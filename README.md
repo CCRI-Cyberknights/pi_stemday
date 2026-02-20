@@ -23,3 +23,11 @@ The 5 challenges:
 [The Command Line Murders](https://github.com/veltman/clmystery) - [This challenge has instructions in a file when you ssh in](https://github.com/veltman/clmystery/blob/master/instructions)
 
 [Cowrie honeypot](https://docs.cowrie.org/en/latest/) - [The player readme](https://github.com/CCRI-Cyberknights/pi_stemday/blob/main/readme_cowrie.html)
+
+### The Containers (`docker-compose.yml`)
+Each Target Pi runs 15 challenge containers to support 3 independent players simultaneously. The ports end in the station number (1, 2, or 3) to isolate traffic.
+* **OWASP Juice Shop:** Ports 3001, 3002, 3003
+* **SQLi-Labs:** Ports 8011, 8012, 8013
+* **OWASP WebGoat:** Ports 8021, 8022, 8023
+* **Cowrie (Active Defense):** Ports 2221, 2222, 2223 (SSH)
+* **CLMystery (Terminal Escape):** Ports 2231, 2232, 2233 (SSH)
