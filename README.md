@@ -31,3 +31,5 @@ Each Target Pi runs 15 challenge containers to support 3 independent players sim
 * **OWASP WebGoat:** Ports 8021, 8022, 8023
 * **Cowrie (Active Defense):** Ports 2221, 2222, 2223 (SSH)
 * **CLMystery (Terminal Escape):** Ports 2231, 2232, 2233 (SSH)
+
+Example of player start screens: [Red Player1](https://github.com/CCRI-Cyberknights/pi_stemday/blob/main/red_capture.png), [Blue Player1](), [Yellow Player1]()

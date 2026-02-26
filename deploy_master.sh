@@ -58,33 +58,85 @@ deploy_target_pi() {
     echo "==============================================="
     echo "Deploying to Target Pi: $ip..."
     
-    # Ping Check: Send 1 ping, wait max 2 seconds for a reply
+    # Ping Check
     if ! ping -c 1 -W 2 "$ip" > /dev/null 2>&1; then
         echo "[-] ERROR: Target Pi at $ip is offline or unreachable. Skipping."
         return 1
     fi
     
-    # Clean overwrite: Delete the old directory and recreate it using the new username
+    # Clean overwrite
     run_ssh "$ip" "$TARGET_USER" "$TARGET_PASS" "rm -rf /home/$TARGET_USER/cyber_smorgasbord && mkdir -p /home/$TARGET_USER/cyber_smorgasbord"
     
-    # Push the new docker-compose.yml
+    # ==========================================
+    # GENERATE THE SMART FIREWALL LOCALLY
+    # ==========================================
+    echo "[+] Generating Smart Anti-Cheat Firewall..."
+    cat << 'EOF' > firewall.sh
+#!/bin/bash
+TARGET_IP=$(hostname -I | awk '{print $1}')
+echo "Applying anti-cheat firewall for $TARGET_IP..."
+
+if [[ "$TARGET_IP" == *"192.168.2.10"* ]]; then
+    P1="192.168.2.101"
+    P2="192.168.2.102"
+    P3="192.168.2.103"
+elif [[ "$TARGET_IP" == *"192.168.2.20"* ]]; then
+    P1="192.168.2.104"
+    P2="192.168.2.105"
+    P3="192.168.2.106"
+elif [[ "$TARGET_IP" == *"192.168.2.30"* ]]; then
+    P1="192.168.2.107"
+    P2="192.168.2.108"
+    P3="192.168.2.109"
+else
+    echo "Unknown Target IP. Skipping firewall."
+    exit 1
+fi
+
+sudo iptables -F DOCKER-USER
+sudo iptables -A DOCKER-USER -s 192.168.2.50 -j RETURN
+sudo iptables -A DOCKER-USER -m conntrack --ctstate ESTABLISHED,RELATED -j RETURN
+
+# Station 1 Isolation
+for PORT in 3001 8011 8021 2221 2231; do
+    sudo iptables -A DOCKER-USER -p tcp -m conntrack --ctorigdstport $PORT -s $P1 -j RETURN
+    sudo iptables -A DOCKER-USER -p tcp -m conntrack --ctorigdstport $PORT -j REJECT --reject-with tcp-reset
+done
+
+# Station 2 Isolation
+for PORT in 3002 8012 8022 2222 2232; do
+    sudo iptables -A DOCKER-USER -p tcp -m conntrack --ctorigdstport $PORT -s $P2 -j RETURN
+    sudo iptables -A DOCKER-USER -p tcp -m conntrack --ctorigdstport $PORT -j REJECT --reject-with tcp-reset
+done
+
+# Station 3 Isolation
+for PORT in 3003 8013 8023 2223 2233; do
+    sudo iptables -A DOCKER-USER -p tcp -m conntrack --ctorigdstport $PORT -s $P3 -j RETURN
+    sudo iptables -A DOCKER-USER -p tcp -m conntrack --ctorigdstport $PORT -j REJECT --reject-with tcp-reset
+done
+
+sudo iptables -A DOCKER-USER -j RETURN
+echo "Firewall locked down."
+EOF
+
+    # ==========================================
+    # PUSH AND EXECUTE
+    # ==========================================
     run_scp "$ip" "$TARGET_USER" "$TARGET_PASS" "docker-compose.yml" "/home/$TARGET_USER/cyber_smorgasbord/docker-compose.yml"
-    
-    # Push the Command Line Murders build folder recursively
+    run_scp "$ip" "$TARGET_USER" "$TARGET_PASS" "firewall.sh" "/home/$TARGET_USER/cyber_smorgasbord/firewall.sh"
     sshpass -p "$TARGET_PASS" scp -r -o StrictHostKeyChecking=no -o ConnectTimeout=5 "clmystery" "$TARGET_USER@$ip:/home/$TARGET_USER/cyber_smorgasbord/"
     
-    # Pull and deploy the containers with orphan cleanup
-    echo "[+] Starting Docker containers on $ip..."
-    run_ssh "$ip" "$TARGET_USER" "$TARGET_PASS" "cd /home/$TARGET_USER/cyber_smorgasbord && docker compose up -d --remove-orphans"
-
-    # Point the Target Pi's time sync directly at the Parrot OS laptop
-    run_ssh "$ip" "$TARGET_USER" "$TARGET_PASS" "sudo sed -i 's/^#NTP=/NTP=192.168.2.50/' /etc/systemd/timesyncd.conf"
+    echo "[+] Starting Docker containers and applying firewall on $ip..."
     
-    # Restart the background service silently
+    # Start Docker and execute the firewall script instantly
+    run_ssh "$ip" "$TARGET_USER" "$TARGET_PASS" "cd /home/$TARGET_USER/cyber_smorgasbord && docker compose up -d --build --remove-orphans && chmod +x firewall.sh && sudo ./firewall.sh"
+
+    # Time sync to the Admin Laptop
+    run_ssh "$ip" "$TARGET_USER" "$TARGET_PASS" "sudo sed -i 's/^#NTP=/NTP=192.168.2.50/' /etc/systemd/timesyncd.conf"
     run_ssh "$ip" "$TARGET_USER" "$TARGET_PASS" "sudo systemctl restart systemd-timesyncd"
 
-    # Force Docker to destroy and rebuild all containers from the cyber_smorgasbord folder on reboot
-    run_ssh "$ip" "$TARGET_USER" "$TARGET_PASS" "(crontab -l 2>/dev/null | grep -v 'cyber_smorgasbord'; echo '@reboot sleep 15 && cd /home/$TARGET_USER/cyber_smorgasbord && docker compose down -v && docker compose up -d') | crontab -"
+    # CRON Update: Rebuild containers and re-apply the firewall on every reboot
+    run_ssh "$ip" "$TARGET_USER" "$TARGET_PASS" "(crontab -l 2>/dev/null | grep -v 'cyber_smorgasbord'; echo '@reboot sleep 15 && cd /home/$TARGET_USER/cyber_smorgasbord && docker compose down -v && docker compose up -d && sleep 10 && sudo ./firewall.sh') | crontab -"
     
     echo "[+] Target Pi $ip deployment complete!"
 }
@@ -99,24 +151,29 @@ deploy_player_pi() {
         echo "[-] ERROR: Player Pi at $ip is offline or unreachable. Skipping."
         return 1
     fi
+
+    # 1. Wipe old SSH keys to prevent "REMOTE HOST IDENTIFICATION HAS CHANGED" errors
+    echo "[+] Wiping stale SSH known_hosts..."
+    run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "rm -f /home/$PLAYER_USER/.ssh/known_hosts"
     
-    # 1. Create the clean directories
+    # 2. Create the clean directories
     run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "mkdir -p /home/$PLAYER_USER/portal /home/$PLAYER_USER/.config/autostart /home/$PLAYER_USER/Desktop"
     
-    # 2. Push the core portal files
+    # 3. Push the core portal files
     run_scp "$ip" "$PLAYER_USER" "$PLAYER_PASS" "portal.py" "/home/$PLAYER_USER/portal/"
     run_scp "$ip" "$PLAYER_USER" "$PLAYER_PASS" "start_kiosk.sh" "/home/$PLAYER_USER/portal/"
     
     # Push the HTML READMEs
     run_scp "$ip" "$PLAYER_USER" "$PLAYER_PASS" "readme_juice.html" "/home/$PLAYER_USER/portal/"
     run_scp "$ip" "$PLAYER_USER" "$PLAYER_PASS" "readme_webgoat.html" "/home/$PLAYER_USER/portal/"
+    run_scp "$ip" "$PLAYER_USER" "$PLAYER_PASS" "readme_sqli.html" "/home/$PLAYER_USER/portal/"
     run_scp "$ip" "$PLAYER_USER" "$PLAYER_PASS" "readme_cowrie.html" "/home/$PLAYER_USER/portal/"
     
-    # 3. Push the shortcut to Autostart (for booting) AND Desktop (for manual clicking)
+    # 4. Push the shortcut to Autostart (for booting) AND Desktop (for manual clicking)
     run_scp "$ip" "$PLAYER_USER" "$PLAYER_PASS" "portal.desktop" "/home/$PLAYER_USER/.config/autostart/portal.desktop"
     run_scp "$ip" "$PLAYER_USER" "$PLAYER_PASS" "portal.desktop" "/home/$PLAYER_USER/Desktop/Start_Range.desktop"
     
-    # 4. Set execution permissions (Crucial for the Desktop icon to work)
+    # 5. Set execution permissions (Crucial for the Desktop icon to work)
     run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "chmod +x /home/$PLAYER_USER/portal/start_kiosk.sh"
     run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "chmod +x /home/$PLAYER_USER/Desktop/Start_Range.desktop"
 
@@ -135,7 +192,7 @@ deploy_player_pi() {
     run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "chmod 644 /home/$PLAYER_USER/Pictures/cyberknights_matrix.jpg"
     
     # Automatically set the background image
-    run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "pcmanfm --set-wallpaper /home/$PLAYER_USER/Pictures/cyberknights_matrix.jpg"
+    run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "DISPLAY=:0 pcmanfm --set-wallpaper /home/$PLAYER_USER/Pictures/cyberknights_matrix.jpg > /dev/null 2>&1"
     
     echo "[+] Player Pi $ip deployment complete! Changes take effect on next reboot."
 }
