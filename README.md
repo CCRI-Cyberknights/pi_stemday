@@ -38,7 +38,7 @@ Students have access to 5 distinct challenges, serving up everything from web ap
 
 *Captive Portal Start Screens:*
 * [Red Team - Player 1](https://github.com/CCRI-Cyberknights/pi_stemday/blob/main/red_capture.png)
-* [Blue Team - Player 1]() *(Coming Soon)*
+* [Blue Team - Player 1](https://github.com/CCRI-Cyberknights/pi_stemday/blob/main/blue_capture.png)
 * [Yellow Team - Player 1]() *(Coming Soon)*
 
 ## 📚 Credits & Upstream Projects

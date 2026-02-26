@@ -156,10 +156,14 @@ deploy_player_pi() {
     echo "[+] Wiping stale SSH known_hosts..."
     run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "rm -f /home/$PLAYER_USER/.ssh/known_hosts"
     
-    # 2. Create the clean directories
+    # 2. Install missing Emoji Font Package
+    echo "[+] Installing color emoji fonts..."
+    run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "sudo apt-get update && sudo apt-get install -y fonts-noto-color-emoji"
+
+    # 3. Create the clean directories
     run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "mkdir -p /home/$PLAYER_USER/portal /home/$PLAYER_USER/.config/autostart /home/$PLAYER_USER/Desktop"
     
-    # 3. Push the core portal files
+    # 4. Push the core portal files
     run_scp "$ip" "$PLAYER_USER" "$PLAYER_PASS" "portal.py" "/home/$PLAYER_USER/portal/"
     run_scp "$ip" "$PLAYER_USER" "$PLAYER_PASS" "start_kiosk.sh" "/home/$PLAYER_USER/portal/"
     
@@ -169,11 +173,11 @@ deploy_player_pi() {
     run_scp "$ip" "$PLAYER_USER" "$PLAYER_PASS" "readme_sqli.html" "/home/$PLAYER_USER/portal/"
     run_scp "$ip" "$PLAYER_USER" "$PLAYER_PASS" "readme_cowrie.html" "/home/$PLAYER_USER/portal/"
     
-    # 4. Push the shortcut to Autostart (for booting) AND Desktop (for manual clicking)
+    # 5. Push the shortcut to Autostart (for booting) AND Desktop (for manual clicking)
     run_scp "$ip" "$PLAYER_USER" "$PLAYER_PASS" "portal.desktop" "/home/$PLAYER_USER/.config/autostart/portal.desktop"
     run_scp "$ip" "$PLAYER_USER" "$PLAYER_PASS" "portal.desktop" "/home/$PLAYER_USER/Desktop/Start_Range.desktop"
     
-    # 5. Set execution permissions (Crucial for the Desktop icon to work)
+    # 6. Set execution permissions (Crucial for the Desktop icon to work)
     run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "chmod +x /home/$PLAYER_USER/portal/start_kiosk.sh"
     run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "chmod +x /home/$PLAYER_USER/Desktop/Start_Range.desktop"
 
