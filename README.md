@@ -1,15 +1,15 @@
-# 🎯 CCRI STEM Day 2026: Offline Cyber Range
+# 🎯 The Cyber Smorgasbord: CCRI STEM Day 2026
 
 Configuration files and bash deployment scripts for the Spring 2026 CCRI STEM Day Capture the Flag (CTF) event. 
 
-This project automates the creation of a fully offline, multi-team cyber range using a cluster of Raspberry Pi 5s. It utilizes Dockerized vulnerable applications and a custom captive portal to give high school students a frictionless, browser-based hacking experience.
+This project automates the creation of a fully offline, multi-team hacking buffet using a cluster of Raspberry Pi 5s. Dubbed "The Cyber Smorgasbord," it utilizes Dockerized vulnerable applications and a custom captive portal to give high school students a frictionless, browser-based cybersecurity experience.
 
 ## 🏗️ Architecture & Networking
 
 * **Player Pis (Attackers):** Running Raspberry Pi OS (64-bit) Desktop. These connect via Wi-Fi. They boot directly into a custom Python-based captive portal, providing a clean UI to launch web targets or view SSH instructions for their assigned Target Pi (Red, Blue, or Yellow).
 * **Target Pis (Victims):** Running Raspberry Pi OS (64-bit) Headless. These are hardwired into the router's switch. They host the vulnerable Docker containers and listen for SSH connections. 
 * **Network Control:** The router uses strict DHCP reservations tied to the Pi MAC addresses. When a Pi connects, DHCP automatically assigns its designated team IP. *(Tip: Physically label your Pis!)*
-* **Scoreboard (Optional):** The range can run standalone, or an administrative laptop can be connected via ethernet. A bridged VM on the laptop can listen on port 80 for JSON POST webhooks triggered by the containers upon challenge completion.
+* **Scoreboard (Optional):** The environment can run standalone, or an administrative laptop can be connected via ethernet. A bridged VM on the laptop can listen on port 80 for JSON POST webhooks triggered by the containers upon challenge completion.
 
 🗺️ **[View the Network Topology Map](https://github.com/CCRI-Cyberknights/pi_stemday/blob/main/PI%20Map.png)**
 
@@ -26,7 +26,7 @@ The container ports end in the player's station number (1, 2, or 3) for isolatio
 
 ## ⚔️ The Challenges
 
-Students have access to 5 distinct challenges, ranging from web application exploitation to terminal navigation.
+Students have access to 5 distinct challenges, serving up everything from web application exploitation to terminal navigation.
 
 1. **OWASP Juice Shop** - [Player Guide](https://github.com/CCRI-Cyberknights/pi_stemday/blob/main/readme_juice.html)
 2. **OWASP WebGoat** - [Player Guide](https://github.com/CCRI-Cyberknights/pi_stemday/blob/main/readme_webgoat.html)
@@ -43,7 +43,7 @@ Students have access to 5 distinct challenges, ranging from web application expl
 
 ## 📚 Credits & Upstream Projects
 
-This cyber range is built on the shoulders of incredible open-source projects. If you enjoyed the challenges and want to run them at home or read the official documentation, check out the source repositories below:
+This smorgasbord is built on the shoulders of incredible open-source projects. If you enjoyed the challenges and want to run them at home or read the official documentation, check out the source repositories below:
 
 * **[OWASP Juice Shop](https://owasp.org/www-project-juice-shop/):** The most modern and sophisticated insecure web application. ([GitHub](https://github.com/juice-shop/juice-shop))
 * **[OWASP WebGoat](https://owasp.org/www-project-webgoat/):** A deliberately insecure interactive classroom designed to teach web application security lessons. ([GitHub](https://github.com/WebGoat/WebGoat))
