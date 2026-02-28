@@ -6,10 +6,10 @@ This project automates the creation of a fully offline, multi-team hacking buffe
 
 ## 🏗️ Architecture & Networking
 
-* **Player Pis (Attackers):** Running Raspberry Pi OS (64-bit) Desktop. These connect via Wi-Fi. They boot directly into a custom Python-based captive portal, providing a clean UI to launch web targets or view SSH instructions for their assigned Target Pi (Red, Blue, or Yellow).
-* **Target Pis (Victims):** Running Raspberry Pi OS (64-bit) Headless. These are hardwired into the router's switch. They host the vulnerable Docker containers and listen for SSH connections. 
+* **Player Pis (Attackers):** 9 Raspberry Pi 5s running Raspberry Pi OS (64-bit) Desktop. To encourage team collaboration, each Player Pi outputs a duplicated screen to two monitors, with students sharing a single keyboard and mouse. These connect wirelessly to the dedicated STEM Day router. They boot directly into a custom Python-based captive portal, providing a clean UI to launch web targets or view SSH instructions for their assigned Target Pi (Red, Blue, or Yellow).
+* **Target Pis (Victims):** 3 Raspberry Pi 5s running Raspberry Pi OS (64-bit) Headless. These are hardwired directly into the router's switch for maximum stability. They host the vulnerable Docker containers and listen for SSH connections. 
 * **Network Control:** The router uses strict DHCP reservations tied to the Pi MAC addresses. When a Pi connects, DHCP automatically assigns its designated team IP. *(Tip: Physically label your Pis!)*
-* **Scoreboard (Optional):** The environment can run standalone, or an administrative laptop can be connected via ethernet. A bridged VM on the laptop can listen on port 80 for JSON POST webhooks triggered by the containers upon challenge completion.
+* **Mission Control (Monitoring):** An administrative laptop is connected to the router via physical ethernet. A bridged VM on the laptop runs an **Uptime Kuma** monitoring stack. This provides the instructor with a real-time "God View" dashboard, actively tracking the physical connection status of all 12 devices in the room, as well as the individual health and uptime of all 45 Docker challenge containers.
 
 🗺️ **[View the Network Topology Map](https://github.com/CCRI-Cyberknights/pi_stemday/blob/main/PI%20Map.png)**
 
