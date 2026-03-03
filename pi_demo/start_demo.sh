@@ -1,11 +1,25 @@
 #!/bin/bash
 echo "[+] Starting the Cyber Smorgasbord Demo Backend..."
 
-# Support both docker and podman depending on what is installed
+# Detect container engines and install Docker if both are missing
 if command -v podman-compose &> /dev/null; then
+    echo "[*] Podman detected. Booting containers..."
     podman-compose up -d --build
-else
+elif command -v docker &> /dev/null && docker compose version &> /dev/null; then
+    echo "[*] Docker detected. Booting containers..."
     docker compose up -d --build
+else
+    echo "[-] No container engine found. Installing Docker..."
+    echo "[*] You may be prompted for your sudo password."
+    
+    # Download and run the official Docker install script
+    curl -fsSL https://get.docker.com -o get-docker.sh
+    sudo sh get-docker.sh
+    rm get-docker.sh
+    
+    echo "[*] Docker installed successfully!"
+    echo "[*] Booting containers (using sudo for the initial fresh install)..."
+    sudo docker compose up -d --build
 fi
 
 echo "[+] Launching the Captive Portal..."
