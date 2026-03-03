@@ -5,7 +5,9 @@ echo "[-] Stopping the Cyber Smorgasbord Demo Backend..."
 if command -v podman-compose &> /dev/null; then
     podman-compose down
 else
-    docker compose down
+    # Use sudo for Docker, as fresh installations require root privileges 
+    # until the user logs out and logs back in.
+    sudo docker compose down
 fi
 
 echo "[-] Stopping the Captive Portal..."
