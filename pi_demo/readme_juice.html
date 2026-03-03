@@ -1,0 +1,23 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Juice Shop Guide</title>
+<style>body { font-family: Arial, sans-serif; background-color: #f4f4f9; padding: 40px; line-height: 1.6; } .container { background-color: white; padding: 30px; border-radius: 8px; max-width: 800px; margin: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1); } h1 { color: #333; font-size: 2.2em; } h2 { color: #007BFF; margin-top: 25px; border-bottom: 2px solid #eee; padding-bottom: 5px; } code { background: #eee; padding: 4px 8px; border-radius: 4px; font-size: 1.1em; color: #d63384; } ul, ol { font-size: 1.1em; margin-bottom: 20px; } li { margin-bottom: 10px; }</style>
+</head><body><div class="container">
+    <h1>🧃 OWASP Juice Shop: The Insecure Storefront</h1>
+    <p>Welcome to the OWASP Juice Shop! On the surface, this looks like a modern, sleek e-commerce website selling juice and merchandise. Under the hood, it is intentionally riddled with every major web vulnerability known to the cybersecurity industry.</p>
+    <h2>🧠 The Concept</h2>
+    <p>Modern web applications trust users way too much. They assume that if they hide a button, you won't click it. They assume that if they ask for a username, you won't type in a malicious database command instead. Your job is to break those assumptions.</p>
+    <p>You will be looking for things like:</p>
+    <ul>
+        <li><strong>Broken Authentication:</strong> Can you log in as the administrator without their password?</li>
+        <li><strong>Cross-Site Scripting (XSS):</strong> Can you trick the website into running your own custom code?</li>
+        <li><strong>Information Exposure:</strong> Did the developers leave sensitive files sitting on the server?</li>
+    </ul>
+    <h2>🎯 Your First Mission: The Scoreboard</h2>
+    <p>Juice Shop tracks your progress automatically, but the developers thought it would be funny to hide the actual Scoreboard from you. <strong>You cannot start tracking your hacks until you find it.</strong></p>
+    <p><strong>Getting Started:</strong></p>
+    <ol>
+        <li>Open the website and look around. Inspect the navigation menus.</li>
+        <li>Press <code>F12</code> to open your browser's <strong>Developer Tools</strong>.</li>
+        <li>Look at the <code>Sources</code> or <code>Elements</code> tab. The code running the website is fully visible to you.</li>
+        <li>Try to find the hidden URL path for the scoreboard. <em>Hint: What happens if you try to guess the URL by typing <code>/scoreboard</code> at the top of the browser?</em></li>
+    </ol>
+</div></body></html>

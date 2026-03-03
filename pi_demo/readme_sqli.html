@@ -1,0 +1,21 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>SQLi-Labs Guide</title>
+<style>body { font-family: Arial, sans-serif; background-color: #f4f4f9; padding: 40px; line-height: 1.6; } .container { background-color: white; padding: 30px; border-radius: 8px; max-width: 800px; margin: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1); } h1 { color: #333; font-size: 2.2em; } h2 { color: #007BFF; margin-top: 25px; border-bottom: 2px solid #eee; padding-bottom: 5px; } code { background: #eee; padding: 4px 8px; border-radius: 4px; font-size: 1.1em; color: #d63384; } ul, ol { font-size: 1.1em; margin-bottom: 20px; } li { margin-bottom: 10px; }</style>
+</head><body><div class="container">
+    <h1>💉 SQLi-Labs: The Database X-Ray</h1>
+    <p>Welcome to SQLi-Labs! This is an interactive laboratory dedicated entirely to one of the most famous and dangerous hacks in history: <strong>SQL Injection</strong>.</p>
+    
+    <h2>🧠 The Concept</h2>
+    <p>Almost every website stores its user data, passwords, and products inside a database. When you type a username into a login box, the website takes your text and secretly inserts it into a database query (written in a language called SQL).</p>
+    <p>But what if you type a piece of SQL code instead of a normal username? If the developers didn't secure the website properly, the database will actually run your code! This allows hackers to dump credit card numbers, bypass logins, and steal entire user tables.</p>
+    
+    <h2>🎯 Your First Mission: Break the Query</h2>
+    <p>This lab acts like an X-Ray. When you try to hack it, the screen will dynamically print exactly what the backend database is thinking, helping you learn how to craft the perfect attack.</p>
+    <p><strong>Getting Started:</strong></p>
+    <ol>
+        <li>Click the <strong>Setup/reset Database for labs</strong> button to build the vulnerable environment.</li>
+        <li>Scroll down and click on <strong>Lesson 1</strong>.</li>
+        <li>Look at the URL in your browser. Add <code>?id=1</code> to the end of the URL and press Enter. You should see a user's login name appear.</li>
+        <li>Now, try to break the database! Add a single quote (<code>'</code>) after the number 1 in the URL (like this: <code>?id=1'</code>).</li>
+        <li>Read the error message on the screen. It is telling you exactly how the database code broke! Your goal is to figure out how to manipulate that error to show hidden data.</li>
+    </ol>
+</div></body></html>

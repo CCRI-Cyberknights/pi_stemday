@@ -1,0 +1,36 @@
+version: '3'
+services:
+  demo-juice-shop:
+    image: docker.io/bkimminich/juice-shop
+    container_name: demo-juice-shop
+    ports:
+      - "3001:3000"
+    restart: unless-stopped
+
+  demo-sqli-labs:
+    image: docker.io/c0ny1/sqli-labs:0.1
+    container_name: demo-sqli-labs
+    restart: unless-stopped
+    ports:
+      - "8011:80"
+
+  demo-webgoat:
+    image: docker.io/webgoat/webgoat
+    container_name: demo-webgoat
+    ports:
+      - "8021:8080"
+    restart: unless-stopped
+
+  demo-clmystery:
+    build: ./clmystery
+    container_name: demo-clmystery
+    restart: unless-stopped
+    ports:
+      - "2231:22"
+
+  demo-cowrie:
+    image: docker.io/cowrie/cowrie
+    container_name: demo-cowrie
+    ports:
+      - "2221:2222"
+    restart: unless-stopped
