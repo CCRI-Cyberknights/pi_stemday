@@ -34,6 +34,20 @@ Students have access to 5 distinct challenges, serving up everything from web ap
 4. **The Command Line Murders** - *(Instructions are hidden inside the container upon SSH login)*
 5. **Cowrie Honeypot** - [Player Guide](https://github.com/CCRI-Cyberknights/pi_stemday/blob/main/readme_cowrie.html)
 
+## 🧪 Try It Yourself: Local Demo
+
+Want to test drive the Cyber Smorgasbord without setting up 12 Raspberry Pis? We have included a standalone "Demo in a Box" that runs on any standard Linux environment (x86 architecture). It spins up a single instance of all 5 challenges and a local version of the Captive Portal.
+
+**How to run the demo:**
+1. Download the `pi_demo` folder from this repository to your local Linux machine.
+2. Open your terminal and navigate into the folder: `cd pi_demo`
+3. Make the scripts executable: `chmod +x start_demo.sh stop_demo.sh`
+4. Run the launch script: `./start_demo.sh`
+
+*Note: The script requires Python 3. If you do not have Docker or Podman installed, the script will automatically prompt you for administrative privileges to install Docker.*
+
+Once launched, open your web browser to `http://127.0.0.1:8080` to access the demo portal. When you are finished, simply run `./stop_demo.sh` to safely spin down the containers and free up your system resources.
+
 ## 📸 Screenshots
 
 *Captive Portal Start Screens:*
