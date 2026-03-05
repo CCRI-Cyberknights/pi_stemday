@@ -12,14 +12,29 @@ else
     echo "[-] No container engine found. Installing Docker..."
     echo "[*] You may be prompted for your sudo password."
     
-    # Download and run the official Docker install script
-    curl -fsSL https://get.docker.com -o get-docker.sh
-    sudo sh get-docker.sh
-    rm get-docker.sh
+    # Check if the OS is Kali Linux, which breaks the standard Docker script
+    if grep -qi "kali" /etc/os-release 2>/dev/null; then
+        echo "[*] Kali Linux detected. Using native APT repositories..."
+        sudo apt-get update
+        # Kali natively hosts docker.io. We try for the v2 plugin first, fallback to v1
+        sudo apt-get install -y docker.io docker-compose-plugin || sudo apt-get install -y docker.io docker-compose
+        sudo systemctl enable --now docker
+    else
+        # Download and run the official Docker install script for other distros like Ubuntu/Mint
+        curl -fsSL https://get.docker.com -o get-docker.sh
+        sudo sh get-docker.sh
+        rm get-docker.sh
+    fi
     
     echo "[*] Docker installed successfully!"
     echo "[*] Booting containers (using sudo for the initial fresh install)..."
-    sudo docker compose up -d --build
+    
+    # Launch fallback: Check if the system uses the new plugin or the old hyphenated command
+    if sudo docker compose version &> /dev/null; then
+        sudo docker compose up -d --build
+    else
+        sudo docker-compose up -d --build
+    fi
 fi
 
 echo "[+] Launching the Captive Portal..."
