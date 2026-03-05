@@ -66,6 +66,28 @@ deploy_target_pi() {
     
     # Clean overwrite
     run_ssh "$ip" "$TARGET_USER" "$TARGET_PASS" "rm -rf /home/$TARGET_USER/cyber_smorgasbord && mkdir -p /home/$TARGET_USER/cyber_smorgasbord"
+
+    # ==========================================
+    # CHECK AND INSTALL DOCKER
+    # ==========================================
+    echo "[+] Checking for Docker installation..."
+    run_ssh "$ip" "$TARGET_USER" "$TARGET_PASS" "
+        if ! command -v docker &> /dev/null; then
+            echo '[-] Docker not found. Checking internet connection...'
+            if ping -c 1 -W 2 8.8.8.8 > /dev/null 2>&1; then
+                echo '[*] Internet detected. Downloading and installing Docker...'
+                curl -fsSL https://get.docker.com -o get-docker.sh
+                sudo sh get-docker.sh
+                rm get-docker.sh
+                sudo usermod -aG docker \$USER
+                echo '[+] Docker installed successfully!'
+            else
+                echo '[-] WARNING: No internet connection! Cannot install Docker. Deployment may fail.'
+            fi
+        else
+            echo '[+] Docker is already installed.'
+        fi
+    "
     
     # ==========================================
     # GENERATE THE SMART FIREWALL LOCALLY
@@ -156,9 +178,16 @@ deploy_player_pi() {
     echo "[+] Wiping stale SSH known_hosts..."
     run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "rm -f /home/$PLAYER_USER/.ssh/known_hosts"
     
-    # 2. Install missing Emoji Font Package
-    echo "[+] Installing color emoji fonts..."
-    run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "sudo apt-get update && sudo apt-get install -y fonts-noto-color-emoji"
+    # 2. Install missing Emoji Font Package & Hacking Tools
+    echo "[+] Checking internet and installing fonts/tools..."
+    run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "
+        if ping -c 1 -W 2 8.8.8.8 > /dev/null 2>&1; then
+            sudo apt-get update && sudo apt-get install -y fonts-noto-color-emoji nmap hydra curl telnet netcat-traditional
+            echo '[+] Packages installed successfully.'
+        else
+            echo '[-] WARNING: No internet connection! Skipping package installation.'
+        fi
+    "
 
     # 3. Create the clean directories
     run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "mkdir -p /home/$PLAYER_USER/portal /home/$PLAYER_USER/.config/autostart /home/$PLAYER_USER/Desktop"
@@ -166,6 +195,7 @@ deploy_player_pi() {
     # 4. Push the core portal files
     run_scp "$ip" "$PLAYER_USER" "$PLAYER_PASS" "portal.py" "/home/$PLAYER_USER/portal/"
     run_scp "$ip" "$PLAYER_USER" "$PLAYER_PASS" "start_kiosk.sh" "/home/$PLAYER_USER/portal/"
+    run_scp "$ip" "$PLAYER_USER" "$PLAYER_PASS" "CyberKnights_2.png" "/home/$PLAYER_USER/portal/"
     
     # Push the HTML READMEs
     run_scp "$ip" "$PLAYER_USER" "$PLAYER_PASS" "readme_juice.html" "/home/$PLAYER_USER/portal/"
@@ -189,14 +219,14 @@ deploy_player_pi() {
 
     # Push the custom wallpaper and fix the Debian display permissions
     run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "mkdir -p /home/$PLAYER_USER/Pictures"
-    run_scp "$ip" "$PLAYER_USER" "$PLAYER_PASS" "cyberknights_matrix.jpg" "/home/$PLAYER_USER/Pictures/"
+    run_scp "$ip" "$PLAYER_USER" "$PLAYER_PASS" "cyberknights matrix.jpg" "/home/$PLAYER_USER/Pictures/"
     
     # Explicitly grant the display manager read access to the image and directory
     run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "chmod 755 /home/$PLAYER_USER/Pictures"
-    run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "chmod 644 /home/$PLAYER_USER/Pictures/cyberknights_matrix.jpg"
+    run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "chmod 644 '/home/$PLAYER_USER/Pictures/cyberknights matrix.jpg'"
     
     # Automatically set the background image
-    run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "DISPLAY=:0 pcmanfm --set-wallpaper /home/$PLAYER_USER/Pictures/cyberknights_matrix.jpg > /dev/null 2>&1"
+    run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "DISPLAY=:0 pcmanfm --set-wallpaper '/home/$PLAYER_USER/Pictures/cyberknights matrix.jpg' > /dev/null 2>&1"
     
     echo "[+] Player Pi $ip deployment complete! Changes take effect on next reboot."
 }

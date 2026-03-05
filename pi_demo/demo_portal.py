@@ -127,6 +127,11 @@ def generate_html():
                 </div>
             </div>
         </div>
+
+        <div style="text-align: center; margin-top: 40px; margin-bottom: 20px;">
+            <img src="CyberKnights_2.png" alt="CCRI Cyberknights" style="max-width: 350px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+        </div>
+
     </body>
     </html>
     """
