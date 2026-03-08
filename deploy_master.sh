@@ -68,6 +68,17 @@ deploy_target_pi() {
     run_ssh "$ip" "$TARGET_USER" "$TARGET_PASS" "rm -rf /home/$TARGET_USER/cyber_smorgasbord && mkdir -p /home/$TARGET_USER/cyber_smorgasbord"
 
     # ==========================================
+    # TIME SYNC (Moved to top!)
+    # ==========================================
+    echo "[+] Syncing time to prevent SSL/APT errors..."
+    run_ssh "$ip" "$TARGET_USER" "$TARGET_PASS" "sudo timedatectl set-timezone America/New_York"
+    run_ssh "$ip" "$TARGET_USER" "$TARGET_PASS" "sudo sed -i 's/^#NTP=/NTP=192.168.2.50/' /etc/systemd/timesyncd.conf"
+    run_ssh "$ip" "$TARGET_USER" "$TARGET_PASS" "sudo systemctl restart systemd-timesyncd"
+    
+    # Sleep for a moment to let the time actually sync before moving on
+    sleep 3
+
+    # ==========================================
     # CHECK AND INSTALL DOCKER
     # ==========================================
     echo "[+] Checking for Docker installation..."
@@ -153,10 +164,6 @@ EOF
     # Start Docker and execute the firewall script instantly
     run_ssh "$ip" "$TARGET_USER" "$TARGET_PASS" "cd /home/$TARGET_USER/cyber_smorgasbord && docker compose up -d --build --remove-orphans && chmod +x firewall.sh && sudo ./firewall.sh"
 
-    # Time sync to the Admin Laptop
-    run_ssh "$ip" "$TARGET_USER" "$TARGET_PASS" "sudo sed -i 's/^#NTP=/NTP=192.168.2.50/' /etc/systemd/timesyncd.conf"
-    run_ssh "$ip" "$TARGET_USER" "$TARGET_PASS" "sudo systemctl restart systemd-timesyncd"
-
     # CRON Update: Rebuild containers and re-apply the firewall on every reboot
     run_ssh "$ip" "$TARGET_USER" "$TARGET_PASS" "(crontab -l 2>/dev/null | grep -v 'cyber_smorgasbord'; echo '@reboot sleep 15 && cd /home/$TARGET_USER/cyber_smorgasbord && docker compose down -v && docker compose up -d && sleep 10 && sudo ./firewall.sh') | crontab -"
     
@@ -178,7 +185,16 @@ deploy_player_pi() {
     echo "[+] Wiping stale SSH known_hosts..."
     run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "rm -f /home/$PLAYER_USER/.ssh/known_hosts"
     
-    # 2. Install missing Emoji Font Package & Hacking Tools
+    # 2. Time Sync (Moved up so apt-get doesn't fail!)
+    echo "[+] Syncing time to prevent SSL/APT errors..."
+    run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "sudo timedatectl set-timezone America/New_York"
+    run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "sudo sed -i 's/^#NTP=/NTP=192.168.2.50/' /etc/systemd/timesyncd.conf"
+    run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "sudo systemctl restart systemd-timesyncd"
+    
+    # Sleep for a moment to let the time actually sync before updating
+    sleep 3
+
+    # 3. Install missing Emoji Font Package & Hacking Tools
     echo "[+] Checking internet and installing fonts/tools..."
     run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "
         if ping -c 1 -W 2 8.8.8.8 > /dev/null 2>&1; then
@@ -189,10 +205,10 @@ deploy_player_pi() {
         fi
     "
 
-    # 3. Create the clean directories
+    # 4. Create the clean directories
     run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "mkdir -p /home/$PLAYER_USER/portal /home/$PLAYER_USER/.config/autostart /home/$PLAYER_USER/Desktop"
     
-    # 4. Push the core portal files
+    # 5. Push the core portal files
     run_scp "$ip" "$PLAYER_USER" "$PLAYER_PASS" "portal.py" "/home/$PLAYER_USER/portal/"
     run_scp "$ip" "$PLAYER_USER" "$PLAYER_PASS" "start_kiosk.sh" "/home/$PLAYER_USER/portal/"
     run_scp "$ip" "$PLAYER_USER" "$PLAYER_PASS" "CyberKnights_2.png" "/home/$PLAYER_USER/portal/"
@@ -203,30 +219,24 @@ deploy_player_pi() {
     run_scp "$ip" "$PLAYER_USER" "$PLAYER_PASS" "readme_sqli.html" "/home/$PLAYER_USER/portal/"
     run_scp "$ip" "$PLAYER_USER" "$PLAYER_PASS" "readme_cowrie.html" "/home/$PLAYER_USER/portal/"
     
-    # 5. Push the shortcut to Autostart (for booting) AND Desktop (for manual clicking)
+    # 6. Push the shortcut to Autostart (for booting) AND Desktop (for manual clicking)
     run_scp "$ip" "$PLAYER_USER" "$PLAYER_PASS" "portal.desktop" "/home/$PLAYER_USER/.config/autostart/portal.desktop"
     run_scp "$ip" "$PLAYER_USER" "$PLAYER_PASS" "portal.desktop" "/home/$PLAYER_USER/Desktop/Start_Range.desktop"
     
-    # 6. Set execution permissions (Crucial for the Desktop icon to work)
+    # 7. Set execution permissions (Crucial for the Desktop icon to work)
     run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "chmod +x /home/$PLAYER_USER/portal/start_kiosk.sh"
     run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "chmod +x /home/$PLAYER_USER/Desktop/Start_Range.desktop"
 
-    # Point the Pi's time sync directly at the Parrot OS laptop
-    run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "sudo sed -i 's/^#NTP=/NTP=192.168.2.50/' /etc/systemd/timesyncd.conf"
-    
-    # Restart the background service silently
-    run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "sudo systemctl restart systemd-timesyncd"
-
-    # Push the custom wallpaper and fix the Debian display permissions
+    # 8. Push the custom wallpaper and fix the Debian display permissions
     run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "mkdir -p /home/$PLAYER_USER/Pictures"
-    run_scp "$ip" "$PLAYER_USER" "$PLAYER_PASS" "cyberknights matrix.jpg" "/home/$PLAYER_USER/Pictures/"
+    run_scp "$ip" "$PLAYER_USER" "$PLAYER_PASS" "cyberknights_matrix.jpg" "/home/$PLAYER_USER/Pictures/"
     
     # Explicitly grant the display manager read access to the image and directory
     run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "chmod 755 /home/$PLAYER_USER/Pictures"
-    run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "chmod 644 '/home/$PLAYER_USER/Pictures/cyberknights matrix.jpg'"
+    run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "chmod 644 /home/$PLAYER_USER/Pictures/cyberknights_matrix.jpg"
     
     # Automatically set the background image
-    run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "DISPLAY=:0 pcmanfm --set-wallpaper '/home/$PLAYER_USER/Pictures/cyberknights matrix.jpg' > /dev/null 2>&1"
+    run_ssh "$ip" "$PLAYER_USER" "$PLAYER_PASS" "DISPLAY=:0 pcmanfm --set-wallpaper /home/$PLAYER_USER/Pictures/cyberknights_matrix.jpg > /dev/null 2>&1"
     
     echo "[+] Player Pi $ip deployment complete! Changes take effect on next reboot."
 }

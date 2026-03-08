@@ -53,7 +53,7 @@ Once launched, open your web browser to `http://127.0.0.1:8080` to access the de
 *Captive Portal Start Screens:*
 * [Red Team - Player 1](https://github.com/CCRI-Cyberknights/pi_stemday/blob/main/red_capture.png)
 * [Blue Team - Player 1](https://github.com/CCRI-Cyberknights/pi_stemday/blob/main/blue_capture.png)
-* [Yellow Team - Player 1]() *(Coming Soon)*
+* [Yellow Team - Player 1](https://github.com/CCRI-Cyberknights/pi_stemday/blob/main/yellow_capture.png)
 
 ## 📚 Credits & Upstream Projects
 
