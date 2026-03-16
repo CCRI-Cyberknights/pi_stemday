@@ -252,35 +252,39 @@ deploy_all_player_pis() {
 # ===============================================
 # Interactive Menu
 # ===============================================
+while true; do
+    clear
+    echo "==============================================="
+    echo "   CCRI STEM Day Master Deployment Script      "
+    echo "==============================================="
+    echo "1) Deploy to a SINGLE TARGET Pi (Docker)"
+    echo "2) Deploy to a SINGLE PLAYER Pi (Captive Portal)"
+    echo "3) Deploy to ALL 9 PLAYER Pis (Mass Update)"
+    echo "4) Exit"
+    echo "==============================================="
+    read -p "Select an option [1-4]: " option
 
-clear
-echo "==============================================="
-echo "   CCRI STEM Day Master Deployment Script      "
-echo "==============================================="
-echo "1) Deploy to a SINGLE TARGET Pi (Docker)"
-echo "2) Deploy to a SINGLE PLAYER Pi (Captive Portal)"
-echo "3) Deploy to ALL 9 PLAYER Pis (Mass Update)"
-echo "4) Exit"
-echo "==============================================="
-read -p "Select an option [1-4]: " option
-
-case $option in
-    1)
-        read -p "Enter the IP of the Target Pi (e.g., $TARGET_RED): " target_ip
-        deploy_target_pi "$target_ip"
-        ;;
-    2)
-        read -p "Enter the IP of the Player Pi (e.g., 192.168.2.101): " player_ip
-        deploy_player_pi "$player_ip"
-        ;;
-    3)
-        deploy_all_player_pis
-        ;;
-    4)
-        echo "Exiting..."
-        exit 0
-        ;;
-    *)
-        echo "Invalid option."
-        ;;
-esac
+    case $option in
+        1)
+            read -p "Enter the IP of the Target Pi (e.g., $TARGET_RED): " target_ip
+            deploy_target_pi "$target_ip"
+            ;;
+        2)
+            read -p "Enter the IP of the Player Pi (e.g., 192.168.2.101): " player_ip
+            deploy_player_pi "$player_ip"
+            ;;
+        3)
+            deploy_all_player_pis
+            ;;
+        4)
+            echo "Exiting..."
+            exit 0
+            ;;
+        *)
+            echo "Invalid option."
+            ;;
+    esac
+    
+    echo ""
+    read -p "Press Enter to return to the main menu..."
+done

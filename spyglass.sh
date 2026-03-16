@@ -51,57 +51,67 @@ grab_screen() {
 # ===============================================
 # The Menu
 # ===============================================
-clear
-echo "=========================================="
-echo "         STEM Day Spyglass Tool           "
-echo "=========================================="
-echo "PLAYER PIS (RED):"
-echo "1) Red Player 1  (192.168.2.101)"
-echo "2) Red Player 2  (192.168.2.102)"
-echo "3) Red Player 3  (192.168.2.103)"
-echo "------------------------------------------"
-echo "PLAYER PIS (BLUE):"
-echo "4) Blue Player 1 (192.168.2.104)"
-echo "5) Blue Player 2 (192.168.2.105)"
-echo "6) Blue Player 3 (192.168.2.106)"
-echo "------------------------------------------"
-echo "PLAYER PIS (YELLOW):"
-echo "7) Yellow Player 1 (192.168.2.107)"
-echo "8) Yellow Player 2 (192.168.2.108)"
-echo "9) Yellow Player 3 (192.168.2.109)"
-echo "------------------------------------------"
-echo "10) SNAPSHOT ENTIRE ROOM (All 9 Players)"
-echo "0)  Exit"
-echo "=========================================="
-read -p "Select Device [0-10]: " OPTION
+while true; do
+    clear
+    echo "=========================================="
+    echo "         STEM Day Spyglass Tool           "
+    echo "=========================================="
+    echo "PLAYER PIS (RED):"
+    echo "1) Red Player 1  (192.168.2.101)"
+    echo "2) Red Player 2  (192.168.2.102)"
+    echo "3) Red Player 3  (192.168.2.103)"
+    echo "------------------------------------------"
+    echo "PLAYER PIS (BLUE):"
+    echo "4) Blue Player 1 (192.168.2.104)"
+    echo "5) Blue Player 2 (192.168.2.105)"
+    echo "6) Blue Player 3 (192.168.2.106)"
+    echo "------------------------------------------"
+    echo "PLAYER PIS (YELLOW):"
+    echo "7) Yellow Player 1 (192.168.2.107)"
+    echo "8) Yellow Player 2 (192.168.2.108)"
+    echo "9) Yellow Player 3 (192.168.2.109)"
+    echo "------------------------------------------"
+    echo "10) SNAPSHOT ENTIRE ROOM (All 9 Players)"
+    echo "0)  Exit"
+    echo "=========================================="
+    read -p "Select Device [0-10]: " OPTION
 
-case $OPTION in
-    1) grab_screen "Red_1" "192.168.2.101" ;;
-    2) grab_screen "Red_2" "192.168.2.102" ;;
-    3) grab_screen "Red_3" "192.168.2.103" ;;
-    
-    4) grab_screen "Blue_1" "192.168.2.104" ;;
-    5) grab_screen "Blue_2" "192.168.2.105" ;;
-    6) grab_screen "Blue_3" "192.168.2.106" ;;
-    
-    7) grab_screen "Yellow_1" "192.168.2.107" ;;
-    8) grab_screen "Yellow_2" "192.168.2.108" ;;
-    9) grab_screen "Yellow_3" "192.168.2.109" ;;
-    
-    10) 
-        echo "Initiating room-wide snapshot..."
-        grab_screen "Red_1" "192.168.2.101"
-        grab_screen "Red_2" "192.168.2.102"
-        grab_screen "Red_3" "192.168.2.103"
-        grab_screen "Blue_1" "192.168.2.104"
-        grab_screen "Blue_2" "192.168.2.105"
-        grab_screen "Blue_3" "192.168.2.106"
-        grab_screen "Yellow_1" "192.168.2.107"
-        grab_screen "Yellow_2" "192.168.2.108"
-        grab_screen "Yellow_3" "192.168.2.109"
-        echo "=========================================="
-        echo "Room snapshot complete! Check the $SAVE_DIR folder."
-        ;;
-    0) exit 0 ;;
-    *) echo "Invalid option." ;;
-esac
+    case $OPTION in
+        1) grab_screen "Red_1" "192.168.2.101" ;;
+        2) grab_screen "Red_2" "192.168.2.102" ;;
+        3) grab_screen "Red_3" "192.168.2.103" ;;
+        
+        4) grab_screen "Blue_1" "192.168.2.104" ;;
+        5) grab_screen "Blue_2" "192.168.2.105" ;;
+        6) grab_screen "Blue_3" "192.168.2.106" ;;
+        
+        7) grab_screen "Yellow_1" "192.168.2.107" ;;
+        8) grab_screen "Yellow_2" "192.168.2.108" ;;
+        9) grab_screen "Yellow_3" "192.168.2.109" ;;
+        
+        10) 
+            echo "Initiating room-wide snapshot..."
+            grab_screen "Red_1" "192.168.2.101"
+            grab_screen "Red_2" "192.168.2.102"
+            grab_screen "Red_3" "192.168.2.103"
+            grab_screen "Blue_1" "192.168.2.104"
+            grab_screen "Blue_2" "192.168.2.105"
+            grab_screen "Blue_3" "192.168.2.106"
+            grab_screen "Yellow_1" "192.168.2.107"
+            grab_screen "Yellow_2" "192.168.2.108"
+            grab_screen "Yellow_3" "192.168.2.109"
+            echo "=========================================="
+            echo "Room snapshot complete! Check the $SAVE_DIR folder."
+            ;;
+        0) 
+            echo "Exiting..."
+            exit 0 
+            ;;
+        *) 
+            echo "[-] Invalid option." 
+            ;;
+    esac
+
+    echo ""
+    read -p "Press Enter to return to the main menu..."
+done
