@@ -122,7 +122,7 @@ while true; do
     echo "2) DISABLE Deep Freeze (Read-Write Mode)"
     read -p "Select [1-2]: " STATE_OPT
 
-    local STATE="enable"
+    STATE="enable"
     if [[ "$STATE_OPT" == "2" ]]; then 
         STATE="disable"
     elif [[ "$STATE_OPT" != "1" ]]; then

@@ -98,6 +98,12 @@ deploy_target_pi() {
         else
             echo '[+] Docker is already installed.'
         fi
+
+        # THE FINAL FIX: Stop Docker, wipe the old format, apply vfs, and restart
+        sudo systemctl stop docker docker.socket > /dev/null 2>&1 || true
+        echo '{\"storage-driver\": \"vfs\"}' | sudo tee /etc/docker/daemon.json > /dev/null
+        sudo rm -rf /var/lib/docker
+        sudo systemctl start docker
     "
     
     # ==========================================
@@ -164,8 +170,8 @@ EOF
     # Start Docker and execute the firewall script instantly
     run_ssh "$ip" "$TARGET_USER" "$TARGET_PASS" "cd /home/$TARGET_USER/cyber_smorgasbord && docker compose up -d --build --remove-orphans && chmod +x firewall.sh && sudo ./firewall.sh"
 
-    # CRON Update: Rebuild containers and re-apply the firewall on every reboot
-    run_ssh "$ip" "$TARGET_USER" "$TARGET_PASS" "(crontab -l 2>/dev/null | grep -v 'cyber_smorgasbord'; echo '@reboot sleep 15 && cd /home/$TARGET_USER/cyber_smorgasbord && docker compose down -v && docker compose up -d && sleep 10 && sudo ./firewall.sh') | crontab -"
+    # CRON Update: Apply the firewall on reboot (Deep Freeze handles the container reset)
+    run_ssh "$ip" "$TARGET_USER" "$TARGET_PASS" "(crontab -l 2>/dev/null | grep -v 'cyber_smorgasbord'; echo '@reboot sleep 15 && cd /home/$TARGET_USER/cyber_smorgasbord && sudo ./firewall.sh') | crontab -"
     
     echo "[+] Target Pi $ip deployment complete!"
 }
